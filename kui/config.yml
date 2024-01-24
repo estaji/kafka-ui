@@ -1,0 +1,6 @@
+kafka:
+  clusters:
+    -
+      name: kafka1
+      bootstrapServers: <kafka-ip>:9092
+      readOnly: true

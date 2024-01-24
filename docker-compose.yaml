@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:master
+    environment:
+      DYNAMIC_CONFIG_ENABLED: 'true'
+      AUTH_TYPE: "LOGIN_FORM"
+      SPRING_SECURITY_USER_NAME: myuser
+      SPRING_SECURITY_USER_PASSWORD: strongpassword
+    volumes:
+      - ./kui/config.yml:/etc/kafkaui/dynamic_config.yaml
+
+  nginx:
+    container_name: nginx-kui
+    image: nginx:1.25.3
+    ports:
+      - 8080:443
+    volumes:
+      - ./ssl:/etc/nginx/ssl
+      - ./nginx:/etc/nginx/conf.d
