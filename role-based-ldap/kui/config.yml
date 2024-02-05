@@ -1,0 +1,69 @@
+kafka:
+  clusters:
+    -
+      name: kafka1
+      bootstrapServers: <kafka-server-ip-address>:9092
+
+rbac:
+  roles:
+    - name: "admin"
+      clusters:
+        - kafka1
+      subjects:
+        - provider: ldap
+          type: group
+          value: "admin_staff"
+      permissions:
+        #- resource: applicationconfig
+          # actions: all
+      
+        - resource: clusterconfig
+          actions: all
+      
+        - resource: topic
+          value: ".*"
+          actions: all
+
+        - resource: consumer
+          value: ".*"
+          actions: all
+
+        - resource: schema
+          value: ".*"
+          actions: all
+
+        - resource: connect
+          value: ".*"
+          actions: all
+
+        - resource: ksql
+          actions: all
+          
+    - name: "users"
+      clusters:
+        - kafka1
+      subjects:
+        - provider: ldap
+          type: group
+          value: "ship_crew"
+      permissions:
+        - resource: clusterconfig
+          actions: [ "view" ]
+
+        - resource: topic
+          value: ".*"
+          actions: 
+            - VIEW
+            - MESSAGES_READ
+
+        - resource: consumer
+          value: ".*"
+          actions: [ view ]
+
+        - resource: schema
+          value: ".*"
+          actions: [ view ]
+
+        - resource: connect
+          value: ".*"
+          actions: [ view ]

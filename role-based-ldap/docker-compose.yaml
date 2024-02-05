@@ -1,0 +1,49 @@
+version: "3"
+
+services:
+  kafka-ui:
+    container_name: kafka-ui
+    image: provectuslabs/kafka-ui:master
+    environment:
+      LOGGING_LEVEL_ROOT: info 
+      DYNAMIC_CONFIG_ENABLED: true
+      AUTH_TYPE: "LDAP"
+      SPRING_LDAP_URLS: "ldap://ldap:10389"
+      SPRING_LDAP_BASE: "cn={0},ou=people,dc=planetexpress,dc=com"
+      SPRING_LDAP_ADMIN_USER: "cn=admin,dc=planetexpress,dc=com"
+      SPRING_LDAP_ADMIN_PASSWORD: "GoodNewsEveryone"
+      SPRING_LDAP_USER_FILTER_SEARCH_BASE: "dc=planetexpress,dc=com"
+      SPRING_LDAP_USER_FILTER_SEARCH_FILTER: "(&(uid={0})(objectClass=inetOrgPerson))"
+      SPRING_LDAP_GROUP_FILTER_SEARCH_BASE: "ou=people,dc=planetexpress,dc=com"
+    ports:
+      - 8080:8080
+    restart: unless-stopped
+    volumes:
+      - ./kui/config.yml:/etc/kafkaui/dynamic_config.yaml
+    networks:
+      network:
+        ipv4_address: 192.168.0.2
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+
+  ldap:
+    container_name: ldap-kafka-ui
+    image: ghcr.io/rroemhild/docker-test-openldap:master
+    networks:
+      network:
+        ipv4_address: 192.168.0.3
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          memory: 1024M
+
+networks:
+  network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 192.168.0.0/29
+          gateway: 192.168.0.1
